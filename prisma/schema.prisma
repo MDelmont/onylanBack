@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id         Int     @id @default(autoincrement())
+    isAdmin    Boolean? @default(false)
+    pseudo     String?  @db.VarChar(255) @unique
+    password   String?  @db.VarChar(255)
+    name       String?  @db.VarChar(255)
+    firstName  String?  @db.VarChar(255)
+    email      String?  @db.VarChar(255) @unique
+    pictureUrl String?  @db.VarChar(255)
+    budget     String?  @db.VarChar(255)
+
+    token InvitationToken? @relation("userInvitation")
+}
+
+model InvitationToken {
+    id       Int     @id @default(autoincrement())
+    isActive Boolean @default(true)
+    userId   Int     @unique
+    token    String  @db.VarChar(255)
+
+    user User @relation("userInvitation", fields: [userId], references: [id])
+}
