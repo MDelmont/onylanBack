@@ -140,6 +140,23 @@ export class User {
             }
         }
     }
+
+    public static async deteleUserById(id:number) {
+        try {
+            const res = await prisma.user.delete({
+                where: {
+                    id: id,
+                },
+            });
+            return res;
+        } catch (error) {
+            console.log(error);
+            throw error; // Throw the error to be handled by the caller
+        } finally {
+            await prisma.$disconnect(); // Disconnect from the Prisma client
+        }
+    }
+    
     // public static async insertTiers(newtiers) {
     // }
 

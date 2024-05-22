@@ -40,6 +40,7 @@ export class AuthCtrl {
             }
             console.log("User exist")
             // Compare the password
+            console.log(req.body.password)
             const valid = await bcrypt.compare(req.body.password, user.password);
             // Return response if password is not valid
             if (!valid) {

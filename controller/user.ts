@@ -165,17 +165,19 @@ export class UserCtrl {
         console.log('start deleteInvitaton')
         try {
             const {invitationId} = req.params
+            const invitationToken = await InvitationToken.getInvitationTokenByID(parseInt(invitationId))
             const invitDelete = await InvitationToken.deteleInvitations(parseInt(invitationId))
-            console.log(invitDelete)
+      
             if (!invitDelete){
-  
-
                 return UtilsResponse.response(res, {
                     statusCode: 401,
                     message: 'Failed to delete Invitaton',
                     data: null,
                 });
     
+            }
+            if(invitationToken?.userId){
+                await User.deteleUserById(invitationToken?.userId)
             }
             return UtilsResponse.response(res, {
                 statusCode: 200,

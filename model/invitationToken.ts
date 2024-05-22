@@ -25,6 +25,27 @@ public static async getInvitationTokenByToken(token: string) {
             }
         }
     }
+
+
+    public static async getInvitationTokenByID(id: number) {
+        try {
+            const res = await prisma.invitationToken.findUnique(
+                {
+                    where: {
+                        id: id,
+                    }
+                }
+            );
+            return(res);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            async () => {
+                await prisma.$disconnect();
+            }
+        }
+    }
+
     public static async updateInvitationToken(id: number, params: {}) {
         try {
             const res = await prisma.invitationToken.update({
