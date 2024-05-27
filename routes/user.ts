@@ -6,8 +6,10 @@ export const user = express.Router();
 
 
 user.get('/userAuth',authMiddleware, UserCtrl.getUserAuth)
+
 user.get('/isAdmin',authMiddleware, UserCtrl.getIsAdminUser)
 user.get('/isAuth',authMiddleware, UserCtrl.getIsAuthUser)
+user.get('/:userId',authMiddleware, UserCtrl.getUserById)
 user.get('/invitation/:invitToken', UserCtrl.getInvitation)
 user.get('/invitations', isAdminMiddleware,UserCtrl.getInvitations)
 user.delete('/invitation/:invitationId', isAdminMiddleware,UserCtrl.deleteInvitaton)

@@ -2,12 +2,14 @@
 import { UtilsResponse } from '../utils/utilsApi';
 import { UtilsForm } from '../utils/utilsForm';
 import { UtilsFunction } from '../utils/utilsFunction';
+import { UtilsUser } from '../utils/utilsUser';
 import { PrismaClient } from "@prisma/client";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { InvitationToken } from '../model/invitationToken';
 import { User } from '../model/user';
-
+import fs from 'fs';
+import path from 'path';
 const prisma = new PrismaClient();
 
 export class UserCtrl {
@@ -16,7 +18,6 @@ export class UserCtrl {
 
     public static async getUserAuth(req: any, res: any, next: any) {
         try {
-            console.log('getUserAuth')
             const user = await User.getUserById(req.auth.userId)
         
             if (!user){
@@ -26,16 +27,14 @@ export class UserCtrl {
                     data: null,
                 });
             }
-            const { password, ...userFiltred} = user
-            
-      
-           
-            
 
+            const userFiltredWithFile = await UtilsUser.filtredUser(user)
+            
+           
             return UtilsResponse.response(res, {
                 statusCode: 200,
                 message: 'getUserAuth successfully',
-                data: userFiltred,
+                data: userFiltredWithFile,
             })
 
            
@@ -68,6 +67,51 @@ export class UserCtrl {
                 statusCode: 200,
                 message: 'getIsAdminUser successfully',
                 data: user.isAdmin,
+            })
+
+        } catch (error) {
+            // Handle any errors
+            console.log(error);
+            return UtilsResponse.response(res, {
+                statusCode: 500,
+                message: 'fail to getIsAdminUser',
+                data: null,
+            });
+        }
+
+    }
+
+    public static async getUserById(req: any, res: any, next: any) {
+        try {
+
+            const userId = req.auth.userId
+            const playerId = req.params.userId
+      
+            const user = await User.getUserById(userId)
+            const player = await User.getUserById(parseInt(playerId))
+            
+
+
+            if (!player || !user){
+                return UtilsResponse.response(res, {
+                    statusCode: 401,
+                    message: 'User not exist',
+                    data: null,
+                });
+            }
+
+            const userFiltredWithFile = await UtilsUser.filtredUser(user)
+            let filtredUser;
+            if(user?.isAdmin || user.id == player.id) {
+                filtredUser =userFiltredWithFile
+            } else {
+                filtredUser = {pseudo : userFiltredWithFile.pseudo, budget:userFiltredWithFile.budget}
+
+            }
+            return UtilsResponse.response(res, {
+                statusCode: 200,
+                message: 'getUserById successfully',
+                data: filtredUser,
             })
 
         } catch (error) {
@@ -145,7 +189,7 @@ export class UserCtrl {
                 statusCode: 200,
                 message: 'Succes get token',
                 data: {
-                    user : {firstName:user.firstName,lastName:user.name},
+                    user : {...user},
                     invitation: invitData,
                 },
             });
