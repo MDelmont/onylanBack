@@ -14,18 +14,21 @@ datasource db {
 }
 
 model User {
-    id         Int     @id @default(autoincrement())
+    id         Int      @id @default(autoincrement())
     isAdmin    Boolean? @default(false)
-    pseudo     String?  @db.VarChar(255) @unique
+    pseudo     String?  @unique @db.VarChar(255)
     password   String?  @db.VarChar(255)
     name       String?  @db.VarChar(255)
     firstName  String?  @db.VarChar(255)
-    email      String?  @db.VarChar(255) @unique
+    email      String?  @unique @db.VarChar(255)
     pictureUrl String?  @db.VarChar(255)
     budget     String?  @db.VarChar(255)
     resetToken String?  @db.VarChar(255)
 
-    token InvitationToken? @relation("userInvitation")
+    token                     InvitationToken?           @relation("userInvitation")
+    userGames                 UserGame[]
+    userDetailRulesNameValues UserDetailRulesNameValue[]
+    teamUsers                 TeamUser[]
 }
 
 model InvitationToken {
@@ -35,4 +38,110 @@ model InvitationToken {
     token    String  @db.VarChar(255)
 
     user User @relation("userInvitation", fields: [userId], references: [id])
+}
+
+model Game {
+    id                  Int        @id @default(autoincrement())
+    name                String     @db.VarChar(255)
+    categorie           String     @db.VarChar(255)
+    description         String     @db.Text
+    pictureUrl          String?     @db.VarChar(255)
+    downloadDescription String     @db.Text
+    userGames           UserGame[]
+    modes               Mode[]
+}
+
+model UserGame {
+    user   User  @relation(fields: [idUser], references: [id])
+    idUser Int
+    game   Game  @relation(fields: [idGame], references: [id])
+    idGame Int
+    note   Float @db.Float
+
+    @@id([idUser, idGame])
+}
+
+model Mode {
+    id                Int    @id @default(autoincrement())
+    name              String @db.VarChar(255)
+    description       String @db.Text
+    installationGuide String @db.Text
+    scoreRules        String @db.VarChar(255)
+    idGame            Int
+
+    game       Game        @relation(fields: [idGame], references: [id])
+    rulesNames RulesName[]
+    eventModes EventMode[]
+}
+
+model RulesName {
+    id     Int    @id @default(autoincrement())
+    idMode Int
+    name   String @db.VarChar(255)
+    type   String @db.VarChar(255)
+
+    mode                      Mode                       @relation(fields: [idMode], references: [id])
+    userDetailRulesNameValues UserDetailRulesNameValue[]
+}
+
+model Event {
+    id                Int      @id @default(autoincrement())
+    name              String   @db.VarChar(255)
+    teaserUrl         String   @db.VarChar(255)
+    description       String   @db.Text
+    dateEvent         DateTime @db.DateTime()
+    dateEndInvitation DateTime @db.DateTime()
+
+    trophy                    Trophy?                    @relation("eventTrophy")
+    eventModes                EventMode[]
+    userDetailRulesNameValues UserDetailRulesNameValue[]
+    teams                     Team[]
+}
+
+model Trophy {
+    id        Int    @id @default(autoincrement())
+    trophyUrl String @db.VarChar(255)
+    idEvent   Int    @unique
+
+    event Event @relation("eventTrophy", fields: [idEvent], references: [id])
+}
+
+model EventMode {
+    event   Event @relation(fields: [idEvent], references: [id])
+    idEvent Int
+    mode    Mode  @relation(fields: [idMode], references: [id])
+    idMode  Int
+
+    @@id([idEvent, idMode])
+}
+
+model UserDetailRulesNameValue {
+    user           User      @relation(fields: [idUser], references: [id])
+    idUser         Int
+    event          Event     @relation(fields: [idEvent], references: [id])
+    idEvent        Int
+    rulesName      RulesName @relation(fields: [idRulesName], references: [id])
+    idRulesName    Int
+    rulesNameValue String    @db.VarChar(255)
+
+    @@id([idUser, idEvent, idRulesName])
+}
+
+model Team {
+    id      Int    @id @default(autoincrement())
+    name    String @db.VarChar(255)
+    logoUrl String @db.VarChar(255)
+    idEvent Int
+
+    event     Event      @relation(fields: [idEvent], references: [id])
+    teamUsers TeamUser[]
+}
+
+model TeamUser {
+    user   User @relation(fields: [idUser], references: [id])
+    idUser Int
+    team   Team @relation(fields: [idTeam], references: [id])
+    idTeam Int
+
+    @@id([idUser, idTeam])
 }

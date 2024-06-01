@@ -1,16 +1,16 @@
-import { User } from "@prisma/client";
+import { Game } from "@prisma/client";
 import fs from 'fs';
 import path from 'path';
-export class UtilsUser {
+export class UtilsGame {
     /**
      * 
-     * @param {User} user
+     * @param {Game} game
      * @returns 
      */
-    public static async filtredUser(user: User) {
+    public static async filtredGame(game: Game) {
 
         try {
-            const { password, isAdmin, pictureUrl, ...userFiltred } = user
+            const { pictureUrl, ...userFiltred } = game
 
             // Ajoutez le type pour inclure la propriété 'file'
             const userFiltredWithFile: typeof userFiltred & { file?: string } = userFiltred;

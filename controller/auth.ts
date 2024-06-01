@@ -208,12 +208,6 @@ export class AuthCtrl {
         }
     };
 
-
-
-
-
-
-
     public static async logout(req: any, res: any, next: any) {
         try {
             res.clearCookie('token');

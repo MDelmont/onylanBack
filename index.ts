@@ -1,6 +1,8 @@
 import express from 'express';
 import { auth } from './routes/auth';
 import { user } from './routes/user';
+import { game } from './routes/game';
+import { mode } from './routes/mode';
 import { User } from './model/user';
 import { UtilsEmail } from './utils/utilsEmail';
 import bcrypt from 'bcrypt';
@@ -49,5 +51,6 @@ User.getUserByParams({ email: process.env.USER_ADMIN_EMAIL }).then(user => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/user", user);
+app.use("/game", game);
+app.use("/mode", mode);
 app.use("/auth", auth);
-
