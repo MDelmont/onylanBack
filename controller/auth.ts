@@ -2,11 +2,11 @@
 import { UtilsResponse } from '../utils/utilsApi';
 import { UtilsForm } from '../utils/utilsForm';
 import { UtilsFunction } from '../utils/utilsFunction';
-import { PrismaClient } from "@prisma/client";
-import jwt, { Secret } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { InvitationToken } from '../model/invitationToken';
 import { User } from '../model/user';
+import { UtilsEmail } from '../utils/utilsEmail';
 
 const secretKey: any = process.env.SECRET_KEY_JWT_AUTH;
 
@@ -33,21 +33,21 @@ export class AuthCtrl {
             console.log("no missingFields")
 
             // Get user with email
-            user = await User.getUserByParams({email:req.body.email})
+            user = await User.getUserByParams({ email: req.body.email })
             // Return response if user does not exist
             if (!user) {
                 return UtilsResponse.loginPasswordInvalidResponse(res);
             }
-            console.log("User exist",req.body.email)
+            console.log("User exist", req.body.email)
             // Compare the password
-   
+
             const valid = await bcrypt.compare(req.body.password, user.password);
             // Return response if password is not valid
             if (!valid) {
                 return UtilsResponse.loginPasswordInvalidResponse(res);
             }
             console.log("It's good password")
-            
+
             if (secretKey) {
                 const token = jwt.sign(
                     { userId: user.id },
@@ -83,38 +83,38 @@ export class AuthCtrl {
     */
 
     public static async register(req: any, res: any, next: any) {
-            let path=null;
-            if (req.file){
-                path = req.file.path
-            }
+        let path = null;
+        if (req.file) {
+            path = req.file.path
+        }
         try {
             // check if requiredFields
-            const requiredFields = ['lastName', 'firstName', 'email', 'password', 'confirmPassword', 'pseudo','budget','token'];
+            const requiredFields = ['lastName', 'name', 'email', 'password', 'confirmPassword', 'pseudo', 'budget', 'token'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
             const token = req.params?.token;
-            
+
 
             if (missingFields.length > 0) {
-                if(path){
+                if (path) {
                     UtilsFunction.deleteFile(path)
                 }
                 return UtilsResponse.missingFieldResponse(res, missingFields)
-                
-               
+
+
             }
-            let { email, password, confirmPassword,  pseudo, budget } = req.body;
+            let { email, password, confirmPassword, pseudo, budget } = req.body;
             email = email.toLowerCase()
 
-            const allErrors:string[] = [];
+            const allErrors: string[] = [];
             // check password condition
             const errors = await UtilsForm.checkPasswordCondition(password, confirmPassword)
-            
+
             // return error if password condition not pass
             if (errors.length > 0) {
                 console.log('Passwords do not match')
                 allErrors.push('badPasswordError')
             }
-  
+
             const errors2 = await UtilsForm.checkEmailCondition(email);
             if (errors2.length > 0) {
                 console.log('Email incorrect')
@@ -131,16 +131,16 @@ export class AuthCtrl {
                 console.log('User already exists with this pseudo', pseudo)
                 allErrors.push('errorPseudoAlreadyExists')
             }
-     
-            if (allErrors.length >0) {
+
+            if (allErrors.length > 0) {
                 console.log(allErrors)
-                if(path){
+                if (path) {
                     UtilsFunction.deleteFile(path)
                 }
                 return UtilsResponse.response(res, {
                     statusCode: 401,
                     message: 'Invalid data for register',
-                    data: {errors:allErrors},
+                    data: { errors: allErrors },
                 });
             }
 
@@ -148,7 +148,7 @@ export class AuthCtrl {
             // Check if the user already exists
             const invitToken = await InvitationToken.getInvitationTokenByToken(token);
             if (!invitToken) {
-                if(path){
+                if (path) {
                     UtilsFunction.deleteFile(path)
                 }
                 return UtilsResponse.response(res, {
@@ -160,7 +160,7 @@ export class AuthCtrl {
 
             const user = await User.getUserById(invitToken.userId);
             if (!user) {
-                if(path){
+                if (path) {
                     UtilsFunction.deleteFile(path)
                 }
                 return UtilsResponse.response(res, {
@@ -170,14 +170,14 @@ export class AuthCtrl {
                 });
             }
 
-            
+
             const passwordHash = await bcrypt.hash(password, 10);
-       
-            const userFinalCreate = await User.updateUser(user.id, { email, password: passwordHash, pictureUrl: path, pseudo, isAdmin: false, budget:budget });
+
+            const userFinalCreate = await User.updateUser(user.id, { email, password: passwordHash, pictureUrl: path, pseudo, isAdmin: false, budget: budget });
             if (userFinalCreate) {
-                
-                const isModifyInvit = await InvitationToken.updateInvitationToken(invitToken.id, {isActive: false});
-    
+
+                const isModifyInvit = await InvitationToken.updateInvitationToken(invitToken.id, { isActive: false });
+
                 console.log('User registered successfully')
                 return UtilsResponse.response(res, {
                     statusCode: 200,
@@ -185,7 +185,7 @@ export class AuthCtrl {
                     data: null,
                 });
             } else {
-                if(path){
+                if (path) {
                     UtilsFunction.deleteFile(path)
                 }
                 return UtilsResponse.response(res, {
@@ -197,7 +197,7 @@ export class AuthCtrl {
         } catch (error) {
             // Handle any errors
             console.log(error);
-            if(path){
+            if (path) {
                 UtilsFunction.deleteFile(path)
             }
             return UtilsResponse.response(res, {
@@ -208,12 +208,12 @@ export class AuthCtrl {
         }
     };
 
-   
-    
 
 
 
-   
+
+
+
     public static async logout(req: any, res: any, next: any) {
         try {
             res.clearCookie('token');
@@ -254,7 +254,7 @@ export class AuthCtrl {
             const email = req.body.email.toLowerCase()
 
             // Get user with email
-            user = "Trouve l'user avec son email"
+            user = await User.getUserByParams({ email })
             // Return response if user does not exist
             if (!user) {
                 return UtilsResponse.response(res, {
@@ -264,16 +264,15 @@ export class AuthCtrl {
                 });
             }
 
-            const token = UtilsFunction.generateToken()
-            const link = `${process.env.APP_URL}` + "/auth/reset-password?token=" + token
-            console.log(token)
+            const token = await UtilsFunction.generateToken()
+
 
             //Update the user informations
-            const isModify = "Mettre a jours le token en base de donné";
+            const isModify = await User.updateUser(user.id, { resetToken: token });
 
             // check if user is modify
             if (isModify) {
-                await "Trouver un moyen d'envoyer un email avec le link"
+                await UtilsEmail.sendEmailToUserForResetPassword(email, token)
 
                 return UtilsResponse.response(res, {
                     statusCode: 200,
@@ -309,16 +308,129 @@ export class AuthCtrl {
     public static async resetPassword(req: any, res: any, next: any) {
         try {
             // check if requiredFields
-            const requiredFields = ['password', 'confirmPassword', 'token'];
+            console.log(req.body)
+            const userIdAuth = req.auth.userId;
+
+
+            const requiredFields = ['password', 'newPassword', 'confirmPassword'];
+            const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
+
+
+
+            if (missingFields.length > 0) {
+
+                return UtilsResponse.missingFieldResponse(res, missingFields)
+
+            }
+
+            const { password, newPassword, confirmPassword } = req.body
+
+
+
+            let user = await User.getUserById(userIdAuth)
+            if (!user) {
+                return UtilsResponse.loginPasswordInvalidResponse(res);
+            }
+            if (user.password) {
+
+                const valid = await bcrypt.compare(password, user.password);
+
+
+                if (!valid) {
+
+                    return UtilsResponse.response(res, {
+                        statusCode: 401,
+                        message: 'Invalid password',
+                        data: { errors: ['badPasswordError'] },
+                    });
+                }
+
+            }
+            const errors = await UtilsForm.checkPasswordCondition(newPassword, confirmPassword)
+
+            // return error if password condition not pass
+            if (errors.length > 0) {
+                return UtilsResponse.response(res, {
+                    statusCode: 401,
+                    message: 'Passwords do not match',
+                    data: { errors },
+                });
+            }
+
+
+            const passwordHash = await bcrypt.hash(newPassword, 10);
+
+
+            let userIsModify = await User.updateUser(user.id, { password: passwordHash })
+
+            // check if user is modify
+            if (userIsModify) {
+
+                return UtilsResponse.response(res, {
+                    statusCode: 200,
+                    message: 'Succes to update password',
+                    data: null,
+                });
+
+            } else {
+                return UtilsResponse.response(res, {
+                    statusCode: 400,
+                    message: 'Failed to update user password',
+                    data: null,
+                });
+            }
+        } catch (error) {
+            console.log(error)
+            return UtilsResponse.response(res, {
+                statusCode: 500,
+                message: 'Failed to update user password',
+                data: null,
+            });
+        }
+    }
+
+
+
+    /**
+    * Controller for the resetPassword route (API)
+    * @param {*} req 
+    * @param {*} res 
+    * @param {*} next 
+    * @returns 
+    */
+
+    public static async resetPasswordToken(req: any, res: any, next: any) {
+        try {
+            // check if requiredFields
+
+            const { token } = req.params
+
+            const requiredFields = ['password', 'confirmPassword'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
 
             if (missingFields.length > 0) {
                 return UtilsResponse.missingFieldResponse(res, missingFields)
             }
 
-            const { password, confirmPassword, token } = req.body
+            const { password, confirmPassword } = req.body
 
-            // check password condition
+            // Get user with email
+
+            const user = await User.getUserByParams({ resetToken: token })
+
+            if (!user) {
+                return UtilsResponse.response(res, {
+                    statusCode: 401,
+                    message: 'Invalid token',
+                    data: { errors: ['notGoodToken'] }
+                });
+            }
+
+
+            // Return response if user does not exist
+
+
+
             const errors = await UtilsForm.checkPasswordCondition(password, confirmPassword)
 
             // return error if password condition not pass
@@ -330,18 +442,8 @@ export class AuthCtrl {
                 });
             }
 
-            const isValidResetToken = "Check si le reset token est bon"
-
-            if (!isValidResetToken) {
-                return UtilsResponse.response(res, {
-                    statusCode: 401,
-                    message: 'Invalid token',
-                    data: null,
-                });
-            }
-            // Hash the password
             const passwordHash = await bcrypt.hash(password, 10);
-            let userIsModify = "Mettre à jours le mot de passe ou il y à le token, et enlever le token de la base de donné"
+            let userIsModify = await User.updateUser(user.id, { password: passwordHash, resetToken: null })
 
             // check if user is modify
             if (userIsModify) {
@@ -377,18 +479,12 @@ export class AuthCtrl {
      * @returns 
      */
 
-    public static async getResetPassword(req: any, res: any, next: any) {
+    public static async getResetPasswordToken(req: any, res: any, next: any) {
         try {
             // check if requiredFields
 
-            const requiredFields = ['passwordResetToken'];
-            const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
-            if (missingFields.length > 0) {
-                return UtilsResponse.missingFieldResponse(res, missingFields)
-            }
-
-            const { passwordResetToken } = req.body
-            const user = await User.getUserByToken(passwordResetToken);
+            const { token } = req.params
+            const user = await User.getUserByToken(token);
             // const user = "Trouver l'utilisateur avec ce token"
 
             if (user) {

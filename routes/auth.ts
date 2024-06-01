@@ -9,6 +9,7 @@ auth.post("/login", AuthCtrl.login);
 auth.post("/register/:token", uploadImage, AuthCtrl.register);
 auth.get("/logout", AuthCtrl.logout);
 auth.post("/forgot-password", AuthCtrl.forgotPassword);
-auth.post('/reset-password', AuthCtrl.resetPassword);
-auth.get('/reset-password', AuthCtrl.getResetPassword);
+auth.post('/reset-password',authMiddleware, AuthCtrl.resetPassword);
+auth.post('/reset-password/:token', AuthCtrl.resetPasswordToken);
+auth.get('/reset-password/:token', AuthCtrl.getResetPasswordToken);
 

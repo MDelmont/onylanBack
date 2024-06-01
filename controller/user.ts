@@ -302,5 +302,102 @@ export class UserCtrl {
         }
     }  
 
+    public static async updateUser(req: any, res: any, next: any) {
+        const path = req?.file?.path;
+        try {
+           
+           const userId =req.auth.userId
+           console.log(req.body)
+    
+           const requiredFields = ['firstName', 'name', 'email',  'pseudo', 'budget'];
+           const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
+           if (missingFields.length > 0) {
+                if (path) {
+                    UtilsFunction.deleteFile(path)
+                }
+               return UtilsResponse.missingFieldResponse(res, missingFields)
+           }
+           const user = await User.getUserById(userId)
+
+           if (!user){
+
+                
+            return UtilsResponse.response(res, {
+                statusCode: 401,
+                message: 'Failed to update user',
+                data: null,
+            });
+        }
+           let {budget,pseudo,email} = req.body
+           email = email.toLowerCase()
+           let allErrors :string[]= [];
+
+           const errors = await UtilsForm.checkEmailCondition(email);
+            if (errors.length > 0) {
+                console.log('Email incorrect')
+                allErrors.push('badEmailError')
+            }
+        
+            if (user.email != email){
+                const existingUser = await User.getManyUserByParams({ email });
+                if (existingUser && existingUser.length > 0) {
+                    console.log('User already exists with this email', email)
+                    allErrors.push('errorEmailAlreadyExists')
+                }
+    
+            }
+            if (user.pseudo != pseudo){
+                const existingUser2 = await User.getManyUserByParams({ pseudo });
+                if (existingUser2 && existingUser2.length > 0) {
+                    console.log('User already exists with this pseudo', pseudo)
+                    allErrors.push('errorPseudoAlreadyExists')
+                }
+            }
+
+
+            if (allErrors.length > 0) {
+                console.log(allErrors)
+                if (path) {
+                    UtilsFunction.deleteFile(path)
+                }
+                return UtilsResponse.response(res, {
+                    statusCode: 401,
+                    message: 'Invalid data for update user',
+                    data: { errors: allErrors },
+                });
+            }
+            if ( user.pictureUrl){
+                UtilsFunction.deleteFile(user.pictureUrl)
+            }
+            
+            
+            const user2 = await User.updateUser(userId,{budget,pseudo,email, pictureUrl: path})
+            
+           console.log(user2)
+           if (user2){
+            return UtilsResponse.response(res, {
+                statusCode: 200,
+                message: 'updateUser successfully',
+                data: true,
+            })
+           } else {
+            return UtilsResponse.response(res, {
+                statusCode: 500,
+                message: 'fail to updateUser',
+                data: null,
+            });
+           }
+          
+
+        } catch (error) {
+            console.log(error);
+            return UtilsResponse.response(res, {
+                statusCode: 500,
+                message: 'fail to updateUser',
+                data: null,
+            });
+        }
+
+    }
     
 }

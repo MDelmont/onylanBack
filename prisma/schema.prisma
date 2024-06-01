@@ -23,6 +23,7 @@ model User {
     email      String?  @db.VarChar(255) @unique
     pictureUrl String?  @db.VarChar(255)
     budget     String?  @db.VarChar(255)
+    resetToken String?  @db.VarChar(255)
 
     token InvitationToken? @relation("userInvitation")
 }

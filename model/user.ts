@@ -6,12 +6,14 @@ interface UserInterface {
     isAdmin?: boolean | null;
     pseudo?: string | null;
     password?: string | undefined;
-    name?: string| null;
+    name?: string | null;
     firstName?: string | null;
     email?: string | undefined;
     pictureUrl?: string | null;
     budget?: string | null;
-  }
+    resetToken?: string | null;
+
+}
 
 export class User {
     constructor() {
@@ -68,7 +70,7 @@ export class User {
             }
         }
     }
-    public static async getUserByParams(params:{}) {
+    public static async getUserByParams(params: {}) {
         try {
             const res = await prisma.user.findFirst(
                 {
@@ -125,11 +127,11 @@ export class User {
             }
         }
     }
-    public static async createUser(params: UserInterface ) {
+    public static async createUser(params: UserInterface) {
         try {
             const res = await prisma.user.create({
                 data: {
-                   ...params
+                    ...params
                 }
             });
             return res;
@@ -141,7 +143,7 @@ export class User {
         }
     }
 
-    public static async deteleUserById(id:number) {
+    public static async deteleUserById(id: number) {
         try {
             const res = await prisma.user.delete({
                 where: {
@@ -156,7 +158,7 @@ export class User {
             await prisma.$disconnect(); // Disconnect from the Prisma client
         }
     }
-    
+
     // public static async insertTiers(newtiers) {
     // }
 
