@@ -108,25 +108,28 @@ export class AuthCtrl {
             const allErrors: string[] = [];
             // check password condition
             const errors = await UtilsForm.checkPasswordCondition(password, confirmPassword)
-
             // return error if password condition not pass
             if (errors.length > 0) {
                 console.log('Passwords do not match')
                 allErrors.push('badPasswordError')
             }
-
             const errors2 = await UtilsForm.checkEmailCondition(email);
+
+            console.log("EmailCondition: ",errors2)
             if (errors2.length > 0) {
                 console.log('Email incorrect')
                 allErrors.push('badEmailError')
             }
             const existingUser = await User.getManyUserByParams({ email });
+
+            console.log("existing email: ",existingUser?true:false)
             if (existingUser && existingUser.length > 0) {
                 console.log('User already exists with this email', email)
                 allErrors.push('errorEmailAlreadyExists')
             }
 
             const existingUser2 = await User.getManyUserByParams({ pseudo });
+            console.log("existing pseudo : ",existingUser2?true:false)
             if (existingUser2 && existingUser2.length > 0) {
                 console.log('User already exists with this pseudo', pseudo)
                 allErrors.push('errorPseudoAlreadyExists')
