@@ -83,17 +83,18 @@ export class AuthCtrl {
     */
 
     public static async register(req: any, res: any, next: any) {
+        console.log("start register")
             let path=null;
             if (req.file){
                 path = req.file.path
             }
         try {
             // check if requiredFields
-            const requiredFields = ['lastName', 'firstName', 'email', 'password', 'confirmPassword', 'pseudo','budget','token'];
+            const requiredFields = ['name', 'firstName', 'email', 'password', 'confirmPassword', 'pseudo','budget','token'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
             const token = req.params?.token;
             
-
+            console.log("missingFields: ",missingFields)
             if (missingFields.length > 0) {
                 if(path){
                     UtilsFunction.deleteFile(path)
@@ -108,32 +109,37 @@ export class AuthCtrl {
             const allErrors:string[] = [];
             // check password condition
             const errors = await UtilsForm.checkPasswordCondition(password, confirmPassword)
-            
+            console.log("password: ",errors)
             // return error if password condition not pass
             if (errors.length > 0) {
                 console.log('Passwords do not match')
                 allErrors.push('badPasswordError')
             }
-  
+            
             const errors2 = await UtilsForm.checkEmailCondition(email);
+
+            console.log("EmailCondition: ",errors2)
             if (errors2.length > 0) {
                 console.log('Email incorrect')
                 allErrors.push('badEmailError')
             }
             const existingUser = await User.getManyUserByParams({ email });
+
+            console.log("existing email: ",existingUser?true:false)
             if (existingUser && existingUser.length > 0) {
                 console.log('User already exists with this email', email)
                 allErrors.push('errorEmailAlreadyExists')
             }
 
             const existingUser2 = await User.getManyUserByParams({ pseudo });
+            console.log("existing pseudo : ",existingUser2?true:false)
             if (existingUser2 && existingUser2.length > 0) {
                 console.log('User already exists with this pseudo', pseudo)
                 allErrors.push('errorPseudoAlreadyExists')
             }
-     
+            console.log("allErrors",allErrors)
             if (allErrors.length >0) {
-                console.log(allErrors)
+                
                 if(path){
                     UtilsFunction.deleteFile(path)
                 }
@@ -147,6 +153,8 @@ export class AuthCtrl {
 
             // Check if the user already exists
             const invitToken = await InvitationToken.getInvitationTokenByToken(token);
+
+            console.log("invitToken",invitToken)
             if (!invitToken) {
                 if(path){
                     UtilsFunction.deleteFile(path)
