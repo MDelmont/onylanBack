@@ -478,7 +478,7 @@ export class AuthCtrl {
             // check if requiredFields
 
             const { token } = req.params
-            const user = await User.getUserByToken(token);
+            const user = await  User.getUserByParams({ resetToken: token })
             // const user = "Trouver l'utilisateur avec ce token"
 
             if (user) {
@@ -490,7 +490,7 @@ export class AuthCtrl {
                 });
             } else {
                 return UtilsResponse.response(res, {
-                    statusCode: 200,
+                    statusCode: 401,
                     message: 'inValid token',
                     data: { isValidToken: false },
                 });

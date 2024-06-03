@@ -18,7 +18,7 @@ export class UtilsEmail {
             from: EMAIL_SEND_FORGETPASSWORD,
             to: email,
             subject: 'Onylan, réinitialiser le mot de passe.',
-            html: `Voici le lien pour réinitialiser le mot de passe : <br> <a href="${URL_FRONT}/forget-password/${token}">${URL_FRONT}/forget-password/${token}</a>`
+            html: `Voici le lien pour réinitialiser le mot de passe : <br> <a href="${URL_FRONT}/resetPassword/${token}">${URL_FRONT}/resetPassword/${token}</a>`
         };
 
         transporter.sendMail(mailOptions, (error: Error | null, info:any) => {

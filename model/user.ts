@@ -88,27 +88,6 @@ export class User {
             }
         }
     }
-    public static async getUserByToken(token: string) {
-        try {
-            const res = await prisma.user.findFirst(
-                {
-                    where: {
-                        token: {
-                            isActive: true,
-                            token: token
-                        }
-                    }
-                }
-            );
-            return (res);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            async () => {
-                await prisma.$disconnect();
-            }
-        }
-    }
 
     public static async updateUser(id: number, params: UserInterface) {
         try {
