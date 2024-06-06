@@ -52,9 +52,9 @@ model Game {
 }
 
 model UserGame {
-    user   User  @relation(fields: [idUser], references: [id])
+    user   User  @relation(fields: [idUser], references: [id], onDelete: Cascade)
     idUser Int
-    game   Game  @relation(fields: [idGame], references: [id])
+    game   Game  @relation(fields: [idGame], references: [id], onDelete: Cascade)
     idGame Int
     note   Float @db.Float
 

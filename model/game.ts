@@ -14,7 +14,7 @@ export class Game {
     constructor() {
     }
 
-    public static async getGames(page?: number) {
+    public static async getGames(userId:number,page?: number) {
         try {
             // pagination: 10 jeux max sur la page, modifié nbGame pour mettre plus ou moins de jeux
             const nbGame = 10;
@@ -23,10 +23,30 @@ export class Game {
                 const number = (page - 1) * nbGame
                 res = await prisma.game.findMany({
                     skip: number,
-                    take: nbGame
+                    take: nbGame,
+                    include: {
+                        userGames: {
+                            where: {
+                                idUser: userId
+                            },
+                            select: {
+                                note: true
+                            }
+                        }
+                    }
                 });
             } else {
                 res = await prisma.game.findMany({
+                    include: {
+                        userGames: {
+                            where: {
+                                idUser: userId
+                            },
+                            select: {
+                                note: true
+                            }
+                        }
+                    }
                 });  
             }
             return res;
