@@ -2,33 +2,22 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-interface UserInterface {
-    isAdmin?: boolean | null ;
-    pseudo?: string | null;
-    password?: string | undefined;
-    name?: string | null;
-    firstName?: string | null;
-    email?: string | undefined;
-    pictureUrl?: string | null;
-    budget?: string | null;
-    resetToken?: string | null;
-
+interface ModeInterface {
+    name: string;
+    description: string;
+    installationGuide: string;
+    scoreRules: string;
+    idGame: number;
 }
 
-export class User {
+export class Mode {
     constructor() {
     }
-
-    public static async getManyUser(params:any) {
+    public static async getModes() {
         try {
-            const res = await prisma.user.findMany({
-                where: {
-                    ...params
-                }
-            }
+            const res = await prisma.mode.findMany(
             );
-            console.log(res);
-            return res;
+            return (res);
         } catch (error) {
             console.log(error);
         } finally {
@@ -37,32 +26,12 @@ export class User {
             }
         }
     }
-    public static async getManyUserByParams(params: UserInterface) {
+    public static async getModeByID(id: number) {
         try {
-            const res = await prisma.user.findMany(
+            const res = await prisma.mode.findUnique(
                 {
                     where: {
-                        ...params
-                    }
-                }
-            );
-            console.log(res);
-            return res;
-        } catch (error) {
-            console.log(error);
-        } finally {
-            async () => {
-                await prisma.$disconnect();
-            }
-        }
-    }
-
-    public static async getUserById(id: number) {
-        try {
-            const res = await prisma.user.findUnique(
-                {
-                    where: {
-                        id: id
+                        id: id,
                     }
                 }
             );
@@ -75,9 +44,9 @@ export class User {
             }
         }
     }
-    public static async getUserByParams(params: {}) {
+    public static async getModeByParams(params: {}) {
         try {
-            const res = await prisma.user.findFirst(
+            const res = await prisma.mode.findMany(
                 {
                     where: {
                         ...params
@@ -93,10 +62,9 @@ export class User {
             }
         }
     }
-
-    public static async updateUser(id: number, params: UserInterface) {
+    public static async updateMode(id: number, params: {}) {
         try {
-            const res = await prisma.user.update({
+            const res = await prisma.mode.update({
                 where: { id },
                 data: {
                     ...params
@@ -111,9 +79,9 @@ export class User {
             }
         }
     }
-    public static async createUser(params: UserInterface) {
+    public static async createMode(params: ModeInterface) {
         try {
-            const res = await prisma.user.create({
+            const res = await prisma.mode.create({
                 data: {
                     ...params
                 }
@@ -126,10 +94,9 @@ export class User {
             }
         }
     }
-
-    public static async deteleUserById(id: number) {
+    public static async deteleMode(id: number) {
         try {
-            const res = await prisma.user.delete({
+            const res = await prisma.mode.delete({
                 where: {
                     id: id,
                 },
@@ -142,10 +109,4 @@ export class User {
             await prisma.$disconnect(); // Disconnect from the Prisma client
         }
     }
-
-    // public static async insertTiers(newtiers) {
-    // }
-
-    // public static async deleteTiers(id) {
-    // }
 }
