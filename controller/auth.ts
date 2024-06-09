@@ -89,7 +89,7 @@ export class AuthCtrl {
         }
         try {
             // check if requiredFields
-            const requiredFields = ['lastName', 'name', 'email', 'password', 'confirmPassword', 'pseudo', 'budget', 'token'];
+            const requiredFields = ['firstName', 'name', 'email', 'password', 'confirmPassword', 'pseudo', 'budget', 'token'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
             const token = req.params?.token;
 
@@ -147,7 +147,7 @@ export class AuthCtrl {
 
             // Check if the user already exists
             const invitToken = await InvitationToken.getInvitationTokenByToken(token);
-            if (!invitToken) {
+            if (!invitToken || !invitToken.isActive) {
                 if (path) {
                     UtilsFunction.deleteFile(path)
                 }

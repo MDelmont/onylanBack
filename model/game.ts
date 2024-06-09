@@ -144,4 +144,6 @@ export class Game {
             await prisma.$disconnect(); // Disconnect from the Prisma client
         }
     }
+
+   
 }

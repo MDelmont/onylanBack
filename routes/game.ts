@@ -7,7 +7,9 @@ import { GameCtrl } from '../controller/game';
 import { ModeCtrl } from '../controller/mode';
 export const game = express.Router();
 
+
 game.post('/note/:gameId',authMiddleware,GameCtrl.updateGameNote)
+game.get('/config',authMiddleware,GameCtrl.getGameConfig)
 game.get('/:gameId', authMiddleware, GameCtrl.getGameById)
 game.patch('/:gameId', isAdminMiddleware, uploadImage, GameCtrl.updateGame)
 game.delete('/:gameId', isAdminMiddleware, GameCtrl.deleteGame)

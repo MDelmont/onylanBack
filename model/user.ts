@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 interface UserInterface {
-    isAdmin?: boolean | null;
+    isAdmin?: boolean | null ;
     pseudo?: string | null;
     password?: string | undefined;
     name?: string | null;
@@ -19,9 +19,14 @@ export class User {
     constructor() {
     }
 
-    public static async getManyUser() {
+    public static async getManyUser(params:any) {
         try {
-            const res = await prisma.user.findMany();
+            const res = await prisma.user.findMany({
+                where: {
+                    ...params
+                }
+            }
+            );
             console.log(res);
             return res;
         } catch (error) {

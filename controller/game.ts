@@ -6,6 +6,7 @@ import { UtilsFiles } from '../utils/utilsFiles';
 import { PrismaClient } from "@prisma/client";
 import { Game } from '../model/game';
 import { UserGame } from '../model/UserGame';
+import { gameConfig } from '../config/gameConfig';
 const prisma = new PrismaClient();
 
 export class GameCtrl {
@@ -105,9 +106,12 @@ export class GameCtrl {
                 return UtilsResponse.missingFieldResponse(res, missingFields);
             }
             let { name, categorie, description, downloadDescription } = req.body;
-
+            
             const allErrors: string[] = [];
 
+            if (!gameConfig.game.categorie.includes(categorie)){
+                allErrors.push('errorCategorieGame');
+            }
             const existingGame = await Game.getGameByParams({ name });
             if (existingGame && existingGame.length > 0) {
                 console.log('Game already exists with this name', name);
@@ -325,6 +329,29 @@ export class GameCtrl {
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to deleteGame',
+                data: null,
+            });
+        }
+
+    }
+
+    public static async getGameConfig(req: any, res: any, next: any) {
+        console.log('start getGameConfig')
+        try {
+            
+
+            return UtilsResponse.response(res, {
+                statusCode: 200,
+                message: 'getGameConfig successfully',
+                data: gameConfig,
+            })
+
+        } catch (error) {
+            // Handle any errors
+            console.log(error);
+            return UtilsResponse.response(res, {
+                statusCode: 500,
+                message: 'fail to getGameConfig',
                 data: null,
             });
         }
