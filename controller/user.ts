@@ -93,7 +93,7 @@ export class UserCtrl {
             if (user?.isAdmin || user.id == player.id) {
                 filtredUser = userFiltredWithFile
             } else {
-                filtredUser = { pseudo: userFiltredWithFile.pseudo, budget: userFiltredWithFile.budget , file : userFiltredWithFile.file  }
+                filtredUser = { pseudo: userFiltredWithFile.pseudo, budget: userFiltredWithFile.budget , file : userFiltredWithFile .file  }
             }
             return UtilsResponse.response(res, {
                 statusCode: 200,

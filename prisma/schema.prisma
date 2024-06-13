@@ -45,8 +45,10 @@ model Game {
     name                String     @db.VarChar(255)
     categorie           String     @db.VarChar(255)
     description         String     @db.Text
-    pictureUrl          String?     @db.VarChar(255)
+    pictureUrl          String?    @db.VarChar(255)
     downloadDescription String     @db.Text
+    price               Float        @default(0.00)
+
     userGames           UserGame[]
     modes               Mode[]
 }

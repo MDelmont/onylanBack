@@ -8,6 +8,7 @@ interface GameInterface {
     description: string;
     pictureUrl: string;
     downloadDescription: string;
+    price : number
 }
 
 export class Game {

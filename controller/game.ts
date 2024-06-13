@@ -96,7 +96,7 @@ export class GameCtrl {
         }
         try {
             // check if requiredFields
-            const requiredFields = ['name', 'categorie', 'description', 'downloadDescription'];
+            const requiredFields = ['name', 'categorie', 'description', 'downloadDescription','price'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields);
             console.log(path)
             if (missingFields.length > 0) {
@@ -105,7 +105,7 @@ export class GameCtrl {
                 }
                 return UtilsResponse.missingFieldResponse(res, missingFields);
             }
-            let { name, categorie, description, downloadDescription } = req.body;
+            let { name, categorie, description, downloadDescription, price } = req.body;
             
             const allErrors: string[] = [];
 
@@ -117,6 +117,11 @@ export class GameCtrl {
                 console.log('Game already exists with this name', name);
                 allErrors.push('errorGameAlreadyExists');
             }
+
+            if (price && price =="" && price <0 && isNaN(price)) {
+                allErrors.push('errorPriceGame');
+            }
+
             if (allErrors.length > 0) {
                 console.log(allErrors);
                 if (path) {
@@ -128,8 +133,8 @@ export class GameCtrl {
                     data: { errors: allErrors },
                 });
             }
-
-            const gameCreate = await Game.createGame({ name, categorie, pictureUrl: path, description, downloadDescription });
+            const priceUpdate  : number = parseFloat(price)
+            const gameCreate = await Game.createGame({ name, categorie, pictureUrl: path, description, downloadDescription, price:priceUpdate });
             if (gameCreate) {
                 console.log('Game create successfully')
                 return UtilsResponse.response(res, {
@@ -170,7 +175,7 @@ export class GameCtrl {
             const gameId = req.params.gameId;
             const intGameId: number = +gameId
             // check if requiredFields
-            const requiredFields = ['name', 'categorie', 'description', 'downloadDescription'];
+            const requiredFields = ['name', 'categorie', 'description', 'downloadDescription','price'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields);
 
             if (missingFields.length > 0) {
@@ -179,11 +184,11 @@ export class GameCtrl {
                 }
                 return UtilsResponse.missingFieldResponse(res, missingFields);
             }
-            let { name, categorie, description, downloadDescription, pictureUrl } = req.body;
+            let { name, categorie, description, downloadDescription, pictureUrl ,price} = req.body;
             const GameArray = await Game.getGameByParams({ id: parseInt(gameId)});
             const existingGameArray = await Game.getGameByParams({ name});
-            console.log(GameArray)
-            console.log(existingGameArray)
+
+
             if (existingGameArray && GameArray){
                 if (existingGameArray.length > 0 && GameArray.length > 0 && existingGameArray[0].id != GameArray[0].id){
                     return UtilsResponse.response(res, {
@@ -203,8 +208,29 @@ export class GameCtrl {
             }
            
             
+            const allErrors: string[] = [];
 
-            const gameCreate = await Game.updateGame(intGameId,{ name, categorie, pictureUrl:path, description, downloadDescription });
+            if (!gameConfig.game.categorie.includes(categorie)){
+                allErrors.push('errorCategorieGame');
+            }
+
+            if (price && price =="" && price <0 && isNaN(price)) {
+                allErrors.push('errorPriceGame');
+            }
+
+            if (allErrors.length > 0) {
+                console.log(allErrors);
+                if (path) {
+                    UtilsFunction.deleteFile(path);
+                }
+                return UtilsResponse.response(res, {
+                    statusCode: 401,
+                    message: 'Invalid data for create game',
+                    data: { errors: allErrors },
+                });
+            }
+            const priceUpdate  : number = parseFloat(price)
+            const gameCreate = await Game.updateGame(intGameId,{ name, categorie, pictureUrl:path, description, downloadDescription,price:priceUpdate });
             if (gameCreate) {
                 console.log('Game update successfully');
                 return UtilsResponse.response(res, {
