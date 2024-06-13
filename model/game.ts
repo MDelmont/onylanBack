@@ -78,12 +78,14 @@ export class Game {
         }
     }
 
-    public static async getNoteByGame(id: number) {
+    public static async getNoteByGames(ids: number[]) {
         try {
-            const res = await prisma.userGame.aggregate(
+            const res = await prisma.userGame.groupBy(
                 {
+                    by: ['idGame'],
                     where: {
-                        idGame: id,
+                        idGame:{ in: ids},
+                        
                     },
                     _avg :{
                         note:true
@@ -91,6 +93,7 @@ export class Game {
                     _count :{
                         note:true
                     },
+                    
                 }
             );
             return (res);

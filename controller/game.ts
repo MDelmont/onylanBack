@@ -19,9 +19,9 @@ export class GameCtrl {
             const intGameId: number = +gameId;
             const game = await Game.getGameByID(intGameId);
 
-            const noteStats = await Game.getNoteByGame(intGameId)
-            
-
+            const noteStats = await Game.getNoteByGames([intGameId])
+            const noteStat = noteStats?.find(game => game.idGame==intGameId)
+ 
             if (!game) {
                 return UtilsResponse.response(res, {
                     statusCode: 401,
@@ -40,7 +40,7 @@ export class GameCtrl {
             if (game.id) {
                 // filtredGame = userFiltredWithFile;
             }
-            const detailGame = {...game,noteStats}
+            const detailGame = {...game,noteStat}
             return UtilsResponse.response(res, {
                 statusCode: 200,
                 message: 'getGameById successfully',
@@ -62,6 +62,23 @@ export class GameCtrl {
         try {
             const userId = req.auth.userId
             const games = await Game.getGames(userId);
+            const noteStats = await Game.getNoteByGames(games.map(game => game.id));
+            let  gamesWithStats =[];
+
+            if (noteStats){
+                for (let game of games){
+                    const noteStat = noteStats.find(noteStat => noteStat.idGame === game.id);
+                
+                    gamesWithStats.push({
+                        noteStat,
+                        ...game
+
+                    })
+    
+                }
+            }
+            console.log(gamesWithStats)
+
             if (!games || games.length === 0) {
                 return UtilsResponse.response(res, {
                     statusCode: 401,
@@ -69,7 +86,7 @@ export class GameCtrl {
                     data: null,
                 });
             }
-            for (let game of games){
+            for (let game of gamesWithStats){
                 const pathImgGame = game.pictureUrl
                 if(pathImgGame){
                     game.pictureUrl = await  UtilsFiles.transformPictureUrl(pathImgGame)
@@ -78,7 +95,7 @@ export class GameCtrl {
             return UtilsResponse.response(res, {
                 statusCode: 200,
                 message: 'getGames successfully',
-                data: games,
+                data: gamesWithStats,
             })
 
         } catch (error) {
