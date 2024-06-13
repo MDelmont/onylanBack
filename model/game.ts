@@ -78,6 +78,31 @@ export class Game {
         }
     }
 
+    public static async getNoteByGame(id: number) {
+        try {
+            const res = await prisma.userGame.aggregate(
+                {
+                    where: {
+                        idGame: id,
+                    },
+                    _avg :{
+                        note:true
+                    },
+                    _count :{
+                        note:true
+                    },
+                }
+            );
+            return (res);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            async () => {
+                await prisma.$disconnect();
+            }
+        }
+    }
+
     public static async getGameByParams(params: {}) {
         try {
             const res = await prisma.game.findMany(

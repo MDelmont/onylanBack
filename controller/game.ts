@@ -18,6 +18,10 @@ export class GameCtrl {
             const gameId = req.params.gameId;
             const intGameId: number = +gameId;
             const game = await Game.getGameByID(intGameId);
+
+            const noteStats = await Game.getNoteByGame(intGameId)
+            
+
             if (!game) {
                 return UtilsResponse.response(res, {
                     statusCode: 401,
@@ -36,11 +40,11 @@ export class GameCtrl {
             if (game.id) {
                 // filtredGame = userFiltredWithFile;
             }
-
+            const detailGame = {...game,noteStats}
             return UtilsResponse.response(res, {
                 statusCode: 200,
                 message: 'getGameById successfully',
-                data: game,
+                data: detailGame,
             })
 
         } catch (error) {
