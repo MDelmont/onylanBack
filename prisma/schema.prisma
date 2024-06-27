@@ -82,7 +82,7 @@ model RulesName {
     name   String @db.VarChar(255)
     type   String @db.VarChar(255)
 
-    mode                      Mode                       @relation(fields: [idMode], references: [id])
+    mode                      Mode                       @relation(fields: [idMode], references: [id], onDelete: Cascade)
     userDetailRulesNameValues UserDetailRulesNameValue[]
 }
 
@@ -105,24 +105,24 @@ model Trophy {
     trophyUrl String @db.VarChar(255)
     idEvent   Int    @unique
 
-    event Event @relation("eventTrophy", fields: [idEvent], references: [id])
+    event Event @relation("eventTrophy", fields: [idEvent], references: [id], onDelete: Cascade)
 }
 
 model EventMode {
-    event   Event @relation(fields: [idEvent], references: [id])
+    event   Event @relation(fields: [idEvent], references: [id], onDelete: Cascade)
     idEvent Int
-    mode    Mode  @relation(fields: [idMode], references: [id])
+    mode    Mode  @relation(fields: [idMode], references: [id], onDelete: Cascade)
     idMode  Int
 
     @@id([idEvent, idMode])
 }
 
 model UserDetailRulesNameValue {
-    user           User      @relation(fields: [idUser], references: [id])
+    user           User      @relation(fields: [idUser], references: [id], onDelete: Cascade)
     idUser         Int
-    event          Event     @relation(fields: [idEvent], references: [id])
+    event          Event     @relation(fields: [idEvent], references: [id], onDelete: Cascade)
     idEvent        Int
-    rulesName      RulesName @relation(fields: [idRulesName], references: [id])
+    rulesName      RulesName @relation(fields: [idRulesName], references: [id], onDelete: Cascade)
     idRulesName    Int
     rulesNameValue String    @db.VarChar(255)
 
@@ -135,14 +135,14 @@ model Team {
     logoUrl String @db.VarChar(255)
     idEvent Int
 
-    event     Event      @relation(fields: [idEvent], references: [id])
+    event     Event      @relation(fields: [idEvent], references: [id], onDelete: Cascade)
     teamUsers TeamUser[]
 }
 
 model TeamUser {
-    user   User @relation(fields: [idUser], references: [id])
+    user   User @relation(fields: [idUser], references: [id], onDelete: Cascade)
     idUser Int
-    team   Team @relation(fields: [idTeam], references: [id])
+    team   Team @relation(fields: [idTeam], references: [id], onDelete: Cascade)
     idTeam Int
 
     @@id([idUser, idTeam])

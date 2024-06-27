@@ -32,6 +32,14 @@ export class Mode {
                 {
                     where: {
                         id: id,
+                    },
+                    include :{
+                        game: {
+                            select: {
+                              name: true,
+                              id:true,
+                            },
+                          },
                     }
                 }
             );

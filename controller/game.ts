@@ -5,6 +5,7 @@ import { UtilsFunction } from '../utils/utilsFunction';
 import { UtilsFiles } from '../utils/utilsFiles';
 import { PrismaClient } from "@prisma/client";
 import { Game } from '../model/game';
+import { Mode } from '../model/mode';
 import { UserGame } from '../model/UserGame';
 import { gameConfig } from '../config/gameConfig';
 const prisma = new PrismaClient();
@@ -21,6 +22,8 @@ export class GameCtrl {
 
             const noteStats = await Game.getNoteByGames([intGameId])
             const noteStat = noteStats?.find(game => game.idGame==intGameId)
+
+   
  
             if (!game) {
                 return UtilsResponse.response(res, {

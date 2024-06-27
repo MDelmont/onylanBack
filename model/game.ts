@@ -65,7 +65,15 @@ export class Game {
                 {
                     where: {
                         id: id,
-                    }
+                    },
+                    include: {
+                        modes: {
+                            select: {
+                              id: true,
+                              name: true,
+                            },
+                          },
+                      },
                 }
             );
             return (res);
