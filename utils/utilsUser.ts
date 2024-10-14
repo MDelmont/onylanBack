@@ -27,7 +27,7 @@ export class UtilsUser {
             }
             return userFiltredWithFile
         } catch (error) {
-            console.log('error in filtredUser : ', error)
+            console.error('error in filtredUser : ', error)
             throw error
         }
 
