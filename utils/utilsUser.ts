@@ -2,10 +2,12 @@ import { User } from "@prisma/client";
 import fs from 'fs';
 import path from 'path';
 export class UtilsUser {
+
     /**
-     * 
-     * @param {User} user
-     * @returns 
+     * Filter a user to remove sensitive data (password, isAdmin, pictureUrl),
+     * and convert the pictureUrl to a base64 string if it is present.
+     * @param user The user to filter.
+     * @returns The filtered user object.
      */
     public static async filtredUser(user: User) {
 
@@ -25,6 +27,7 @@ export class UtilsUser {
             }
             return userFiltredWithFile
         } catch (error) {
+            console.log('error in filtredUser : ', error)
             throw error
         }
 

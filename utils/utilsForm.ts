@@ -1,11 +1,12 @@
 import { constFormulaire } from "../config/formConfig";
 
 export class UtilsForm {
+
     /**
-     * 
-     * @param {*} req
-     * @param {*} requiredFields List of string
-     * @returns 
+     * Check if all required fields are present in the request body
+     * @param {Request} req - The request object
+     * @param {string[]} requiredFields - The list of required fields
+     * @returns {Promise<string[]>} - A promise with a list of missing fields
      */
     public static async checkMissingField(req: Request, requiredFields: string[]): Promise<string[]> {
         const missingFields = [];
@@ -47,6 +48,11 @@ export class UtilsForm {
         return errors
     }
 
+    /**
+     * Check if the email respect condition for register
+     * @param {string} email the email to check
+     * @returns {Promise<string[]>} a list of string key of the condition that is not respected
+     */
     public static async checkEmailCondition(email: string): Promise<string[]> {
         let errors: string[] = [];
 

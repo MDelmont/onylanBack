@@ -4,6 +4,12 @@ const PASSWORD_SEND_FORGETPASSWORD = process.env.PASSWORD_SEND_FORGETPASSWORD;
 const URL_FRONT = process.env.URL_FRONT;
 
 export class UtilsEmail {
+
+    /**
+     * Send an email to the user to reset the password
+     * @param {string} email - Email of the user
+     * @param {string} token - Token to reset the password
+     */
     public static async sendEmailToUserForResetPassword(email: string, token: string) {
 
         const transporter = nodemailer.createTransport({

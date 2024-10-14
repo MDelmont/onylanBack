@@ -439,7 +439,6 @@ export class GameCtrl {
         console.log('start getGameConfig')
         try {
             
-
             return UtilsResponse.response(res, {
                 statusCode: 200,
                 message: 'getGameConfig successfully',
