@@ -16,6 +16,13 @@ export class UserCtrl {
     constructor() {
     }
 
+    /**
+     * Get user by id in token
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object
+     */
     public static async getUserAuth(req: any, res: any, next: any) {
         try {
             const user = await User.getUserById(req.auth.userId)
@@ -35,7 +42,7 @@ export class UserCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getUserAuth', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getUserAuth',
@@ -45,6 +52,13 @@ export class UserCtrl {
     }
 
 
+    /**
+     * Check if user in token is admin
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object
+     */
     public static async getIsAdminUser(req: any, res: any, next: any) {
         try {
             const user = await User.getUserById(req.auth.userId)
@@ -63,7 +77,7 @@ export class UserCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getIsAdminUser', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getIsAdminUser',
@@ -72,6 +86,13 @@ export class UserCtrl {
         }
     }
 
+        /**
+         * Get a user by his id
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object with user
+         */
     public static async getUserById(req: any, res: any, next: any) {
         try {
 
@@ -102,7 +123,7 @@ export class UserCtrl {
             })
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getUserById', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getIsAdminUser',
@@ -111,6 +132,13 @@ export class UserCtrl {
         }
     }
 
+    /**
+     * Check if user is authenticated
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object
+     */
     public static async getIsAuthUser(req: any, res: any, next: any) {
         try {
             const user = await User.getUserById(req.auth.userId)
@@ -129,7 +157,7 @@ export class UserCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getIsAuthUser',error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getIsAdminUser',
@@ -138,6 +166,13 @@ export class UserCtrl {
         }
     }
 
+    /**
+     * Get the invitation token with the given token
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object
+     */
     public static async getInvitation(req: any, res: any, next: any) {
         try {
             const invitToken: string = req.params.invitToken;
@@ -169,8 +204,7 @@ export class UserCtrl {
                 },
             });
         } catch (error) {
-            // Send error response with UserID for debugging
-            console.log(error);
+            console.error('error in getInvitation' , error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to get inviation',
@@ -180,6 +214,13 @@ export class UserCtrl {
     }
 
 
+    /**
+     * Delete a invitation
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object with invitation id
+     */
     public static async deleteInvitaton(req: any, res: any, next: any) {
         console.log('start deleteInvitaton')
         try {
@@ -204,7 +245,7 @@ export class UserCtrl {
                 data: null,
             });
         } catch (error) {
-            console.log(error);
+            console.error('error in deleteInvitaton' , error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to delete Invitaton',
@@ -213,6 +254,13 @@ export class UserCtrl {
         }
     }
 
+    /**
+     * Create a new User and InvitationToken
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object
+     */
     public static async createInvitation(req: any, res: any, next: any) {
         console.log('start createInvitation')
         let user: any;
@@ -225,19 +273,30 @@ export class UserCtrl {
 
             const token = await UtilsFunction.generateToken();
             user = await User.createUser({ name: req.body.name, firstName: req.body.firstName, isAdmin: false });
-            const inivit = await InvitationToken.createInvitationToken(user.id, token);
-            // Send success response with a login token
+            const invit = await InvitationToken.createInvitationToken(user.id, token);
+            if(invit) {
+                // Send success response with a login token
             return UtilsResponse.response(res, {
                 statusCode: 200,
                 message: 'Success to create',
                 data: {
                     userId: user.id,
-                    token: inivit.token,
+                    token: invit.token,
                 },
             });
+            }
+
+            return UtilsResponse.response(res, {
+                statusCode: 400,
+                message: 'Failed to create',
+                data: {
+                    userId: user.id,
+                },
+            });
+            
         } catch (error) {
             // Send error response with UserID for debugging
-            console.log(error);
+            console.error('error in createInvitation', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to create',
@@ -245,11 +304,18 @@ export class UserCtrl {
             });
         }
     }
+
+    /**
+     * Get all invitations
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object with all invitations
+     */
     public static async getInvitations(req: any, res: any, next: any) {
         console.log("Start getInvitations")
         try {
             const invitData = await InvitationToken.getInvitations();
-            console.log(invitData)
             if (!invitData) {
                 return UtilsResponse.response(res, {
                     statusCode: 401,
@@ -267,7 +333,7 @@ export class UserCtrl {
             });
         } catch (error) {
             // Send error response with UserID for debugging
-            console.log(error);
+            console.error('error in getInvitations', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to get inviation',
@@ -276,11 +342,17 @@ export class UserCtrl {
         }
     }
 
+    /**
+     * Update a user
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object with a boolean value
+     */
     public static async updateUser(req: any, res: any, next: any) {
         const path = req?.file?.path;
         try {
             const userId = req.auth.userId
-            console.log(req.body)
 
             const requiredFields = ['firstName', 'name', 'email', 'pseudo', 'budget'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
@@ -354,7 +426,7 @@ export class UserCtrl {
                 });
             }
         } catch (error) {
-            console.log(error);
+            console.error('error in updateUser', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to updateUser',
@@ -363,12 +435,18 @@ export class UserCtrl {
         }
     }
 
+    /**
+     * Get all users
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object with all users
+     */
     public static async getUsers(req: any, res: any, next: any) {
         try {
 
             const params = {pseudo: { not: null}}
             const users = await User.getManyUser(params )
-            console.log(users)
             let filtredUsers=[];
             if(users) {
                 for (let user of users){
@@ -377,7 +455,6 @@ export class UserCtrl {
                 }
             }
  
-           
             return UtilsResponse.response(res, {
                 statusCode: 200,
                 message: 'getUsers successfully',
@@ -385,7 +462,7 @@ export class UserCtrl {
             })
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getUsers', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getUsers',

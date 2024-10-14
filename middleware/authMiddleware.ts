@@ -41,8 +41,7 @@ export async function authMiddleware(req: any, res: any, next: any) {
      
         next();
     } catch (error) {
-        console.error('Error in authMiddleware')
-        console.error(error)
+        console.error('Error in authMiddleware',error)
         const ret = {
             statusCode: 401,
             message: 'Token is not valid',
@@ -93,8 +92,7 @@ export async function isAdminMiddleware(req: any, res: any, next: any) {
         next();
         
     } catch (error) {
-        console.error('Error in isAdminMiddleware')
-        console.error(error)
+        console.error('Error in isAdminMiddleware',error)
         const ret = {
             statusCode: 401,
             message: 'Token is not valid',
@@ -104,7 +102,13 @@ export async function isAdminMiddleware(req: any, res: any, next: any) {
     }
 };
 
-
+/**
+ * Verify that the token is valid and that the user is an admin
+ * @param {object} req - request object
+ * @param {object} res - response object
+ * @param {function} next - next function
+ * @returns {Promise<object>} - response object
+ */
 export async function goodInviteToken(req: any, res: any, next: any) {
     console.log('start goodInviteToken')
     // Get the token from the request headers
@@ -145,8 +149,7 @@ export async function goodInviteToken(req: any, res: any, next: any) {
         next();
         
     } catch (error) {
-        console.error('Error in goodInviteToken')
-        console.error(error)
+        console.error('Error in goodInviteToken' , error)
         const ret = {
             statusCode: 401,
             message: 'Token is not valid',

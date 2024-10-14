@@ -14,6 +14,14 @@ export class GameCtrl {
     constructor() {
     }
 
+
+     /**
+     * Get a game by its id
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object with game
+     */
     public static async getGameById(req: any, res: any, next: any) {
         try {
             const gameId = req.params.gameId;
@@ -52,7 +60,7 @@ export class GameCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getGameById', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getGameById',
@@ -61,6 +69,14 @@ export class GameCtrl {
         }
 
     }
+
+        /**
+         * Get all games of a user
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object with games
+         */
     public static async getGames(req: any, res: any, next: any) {
         try {
             const userId = req.auth.userId
@@ -103,7 +119,7 @@ export class GameCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getGames', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getGames',
@@ -113,6 +129,13 @@ export class GameCtrl {
 
     }
 
+        /**
+         * Create a new game
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object with game id
+         */
     public static async createGame(req: any, res: any, next: any) {
         let path = null;
         if (req.file) {
@@ -122,7 +145,6 @@ export class GameCtrl {
             // check if requiredFields
             const requiredFields = ['name', 'categorie', 'description', 'downloadDescription','price'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields);
-            console.log(path)
             if (missingFields.length > 0) {
                 if (path) {
                     UtilsFunction.deleteFile(path);
@@ -147,7 +169,7 @@ export class GameCtrl {
             }
 
             if (allErrors.length > 0) {
-                console.log(allErrors);
+                console.log('error for user in createGame', allErrors);
                 if (path) {
                     UtilsFunction.deleteFile(path);
                 }
@@ -178,7 +200,7 @@ export class GameCtrl {
             }
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in createGame', error);
             if (path) {
                 UtilsFunction.deleteFile(path);
             }
@@ -190,6 +212,13 @@ export class GameCtrl {
         }
     };
 
+        /**
+         * Update a game
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object
+         */
     public static async updateGame(req: any, res: any, next: any) {
         let path = null;
         if (req.file) {
@@ -243,7 +272,7 @@ export class GameCtrl {
             }
 
             if (allErrors.length > 0) {
-                console.log(allErrors);
+                console.log('error for user in updateGame', allErrors);
                 if (path) {
                     UtilsFunction.deleteFile(path);
                 }
@@ -274,7 +303,7 @@ export class GameCtrl {
             }
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in updateGame', error);
             if (path) {
                 UtilsFunction.deleteFile(path);
             }
@@ -286,6 +315,13 @@ export class GameCtrl {
         }
     };
 
+        /**
+         * Update the note of a game for a user
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object with a boolean value
+         */
     public static async updateGameNote(req: any, res: any, next: any) {
         console.log('start updateGameNote')
         try {
@@ -336,7 +372,7 @@ export class GameCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in updateGameNote', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to updateGameNote',
@@ -346,6 +382,13 @@ export class GameCtrl {
 
     }
 
+        /**
+         * Delete a game
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object with game id
+         */
     public static async deleteGame(req: any, res: any, next: any) {
         console.log('start deleteGame')
         try {
@@ -375,7 +418,7 @@ export class GameCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error(' error in deleteGame', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to deleteGame',
@@ -385,6 +428,13 @@ export class GameCtrl {
 
     }
 
+        /**
+         * Get the game config
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object with the game config
+         */
     public static async getGameConfig(req: any, res: any, next: any) {
         console.log('start getGameConfig')
         try {
@@ -398,7 +448,7 @@ export class GameCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getGameConfig', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getGameConfig',

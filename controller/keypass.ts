@@ -14,6 +14,14 @@ export class KeyPassCtrl {
     constructor() {
     }
 
+/**
+ * getAsk
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @param {Function} next - The next middleware function
+ * @description This function will handle the ask route and return a response based on the ask parameter.
+ * @returns {Promise} - A promise with the response object
+ */
     public static async getAsk(req: any, res: any, next: any) {
         try {
             const ask = req.body.ask;
@@ -147,7 +155,7 @@ export class KeyPassCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getAsk', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to ask',

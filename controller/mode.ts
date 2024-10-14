@@ -10,6 +10,13 @@ export class ModeCtrl {
     constructor() {
     }
 
+    /**
+     * Get a mode by its id
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object with mode
+     */
     public static async getModeById(req: any, res: any, next: any) {
         try {
             const modeId = req.params.modeId;
@@ -36,7 +43,7 @@ export class ModeCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getModeById', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getGameById',
@@ -45,6 +52,14 @@ export class ModeCtrl {
         }
 
     }
+
+    /**
+     * Get all modes
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object with all modes
+     */
     public static async getModes(req: any, res: any, next: any) {
         try {
             const modes = await Mode.getModes();
@@ -63,7 +78,7 @@ export class ModeCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getModes', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getModes',
@@ -73,6 +88,13 @@ export class ModeCtrl {
 
     }
 
+    /**
+     * Get all modes for a game
+     * @param {object} req - request object
+     * @param {object} res - response object
+     * @param {function} next - next function
+     * @returns {Promise<object>} - response object with all modes for the game
+     */
     public static async getModesByGame(req: any, res: any, next: any) {
         try {
             const gameId = req.params.gameId;
@@ -94,7 +116,7 @@ export class ModeCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in getModesByGame', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to getModes',
@@ -104,6 +126,13 @@ export class ModeCtrl {
 
     }
 
+        /**
+         * Create a new mode
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object with mode id
+         */
     public static async createMode(req: any, res: any, next: any) {
         let path = null;
         try {
@@ -157,7 +186,7 @@ export class ModeCtrl {
             }
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in createMode', error);
             if (path) {
                 UtilsFunction.deleteFile(path);
             }
@@ -169,6 +198,13 @@ export class ModeCtrl {
         }
     };
 
+        /**
+         * Update a mode
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object with mode id
+         */
     public static async updateMode(req: any, res: any, next: any) {
         try {
             const modeId = req.params.modeId;
@@ -215,7 +251,7 @@ export class ModeCtrl {
             }
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in updateMode', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to register Mode',
@@ -224,6 +260,13 @@ export class ModeCtrl {
         }
     };
 
+/**
+ * Delete a mode
+ * @param {object} req - request object
+ * @param {object} res - response object
+ * @param {function} next - next function
+ * @returns {Promise<object>} - response object with a boolean value
+ */
     public static async deleteMode(req: any, res: any, next: any) {
         console.log('start deleteMode')
         try {
@@ -247,7 +290,7 @@ export class ModeCtrl {
 
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error('error in deleteMode', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'fail to deleteMode',

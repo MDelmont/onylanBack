@@ -19,6 +19,11 @@ export class User {
     constructor() {
     }
 
+    /**
+     * Get many users from database
+     * @param {object} params - object with params to filter users
+     * @returns {Promise<UserInterface[]>} - array of users
+     */
     public static async getManyUser(params:any) {
         try {
             const res = await prisma.user.findMany({
@@ -30,13 +35,19 @@ export class User {
             console.log(res);
             return res;
         } catch (error) {
-            console.log(error);
+            console.error('error in getManyUser : ', error);
         } finally {
             async () => {
                 await prisma.$disconnect();
             }
         }
     }
+
+    /**
+     * Get many users from database with given params
+     * @param {UserInterface} params - object with params to filter users
+     * @returns {Promise<UserInterface[]>} - array of users
+     */
     public static async getManyUserByParams(params: UserInterface) {
         try {
             const res = await prisma.user.findMany(
@@ -49,7 +60,7 @@ export class User {
             console.log(res);
             return res;
         } catch (error) {
-            console.log(error);
+            console.error('error in getManyUserByParams : ', error);
         } finally {
             async () => {
                 await prisma.$disconnect();
@@ -57,6 +68,11 @@ export class User {
         }
     }
 
+    /**
+     * Get a user by its id
+     * @param {number} id - the id of the user
+     * @returns {Promise<UserInterface | null>} - the user object or null if not found
+     */
     public static async getUserById(id: number) {
         try {
             const res = await prisma.user.findUnique(
@@ -68,13 +84,19 @@ export class User {
             );
             return (res);
         } catch (error) {
-            console.log(error);
+            console.error('error in getUserById : ', error);
         } finally {
             async () => {
                 await prisma.$disconnect();
             }
         }
     }
+    
+    /**
+     * Get a user by its parameters
+     * @param {object} params - object with params to filter users
+     * @returns {Promise<UserInterface | null>} - the user object or null if not found
+     */
     public static async getUserByParams(params: {}) {
         try {
             const res = await prisma.user.findFirst(
@@ -86,7 +108,7 @@ export class User {
             );
             return (res);
         } catch (error) {
-            console.log(error);
+            console.error('error in getUserByParams : ', error);
         } finally {
             async () => {
                 await prisma.$disconnect();
@@ -94,6 +116,12 @@ export class User {
         }
     }
 
+    /**
+     * Update a user
+     * @param {number} id - the id of the user to update
+     * @param {object} params - the params to update the user
+     * @returns {Promise<UserInterface | null>} - the updated user object or null if not found
+     */
     public static async updateUser(id: number, params: UserInterface) {
         try {
             const res = await prisma.user.update({
@@ -104,13 +132,19 @@ export class User {
             });
             return (res);
         } catch (error) {
-            console.log(error);
+            console.error('error in updateUser : ', error);
         } finally {
             async () => {
                 await prisma.$disconnect();
             }
         }
     }
+    
+    /**
+     * Create a new user
+     * @param {UserInterface} params - the params of the user
+     * @returns {Promise<UserInterface>} - the created user object
+     */
     public static async createUser(params: UserInterface) {
         try {
             const res = await prisma.user.create({
@@ -119,14 +153,20 @@ export class User {
                 }
             });
             return res;
-        }
-        finally {
+        } catch (error) {
+            console.error('error in createUser : ', error);
+        } finally {
             async () => {
                 await prisma.$disconnect();
             }
         }
     }
 
+    /**
+     * Delete a user by its id
+     * @param {number} id - the id of the user
+     * @returns {Promise<UserInterface | null>} - the deleted user object or null if not found
+     */
     public static async deteleUserById(id: number) {
         try {
             const res = await prisma.user.delete({
@@ -136,16 +176,10 @@ export class User {
             });
             return res;
         } catch (error) {
-            console.log(error);
-            throw error; // Throw the error to be handled by the caller
+            console.error('error in deteleUserById : ', error);
         } finally {
             await prisma.$disconnect(); // Disconnect from the Prisma client
         }
     }
 
-    // public static async insertTiers(newtiers) {
-    // }
-
-    // public static async deleteTiers(id) {
-    // }
 }

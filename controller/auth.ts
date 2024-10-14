@@ -66,7 +66,7 @@ export class AuthCtrl {
             });
         } catch (error) {
             // Send error response with UserID for debugging
-            console.log(error);
+            console.error('error in login', error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to login',
@@ -81,7 +81,6 @@ export class AuthCtrl {
     * @param {*} res 
     * @param {*} next 
     */
-
     public static async register(req: any, res: any, next: any) {
         console.log("start register")
             let path=null;
@@ -204,7 +203,7 @@ export class AuthCtrl {
             }
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error("error in register",error);
             if (path) {
                 UtilsFunction.deleteFile(path)
             }
@@ -216,6 +215,13 @@ export class AuthCtrl {
         }
     };
 
+        /**
+         * Logout user
+         * @param {object} req - request object
+         * @param {object} res - response object
+         * @param {function} next - next function
+         * @returns {Promise<object>} - response object
+         */
     public static async logout(req: any, res: any, next: any) {
         try {
             res.clearCookie('token');
@@ -226,7 +232,7 @@ export class AuthCtrl {
             });
         } catch (error) {
             // Handle any errors
-            console.log(error);
+            console.error("error in logout",error);
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to logout user',
@@ -241,7 +247,6 @@ export class AuthCtrl {
      * @param {*} res 
      * @param {*} next 
      */
-
     public static async forgotPassword(req: any, res: any, next: any) {
         let user;
         try {
@@ -290,7 +295,7 @@ export class AuthCtrl {
                 });
             }
         } catch (error) {
-            console.log(error)
+            console.error('error in forgotPassword ', error)
             return UtilsResponse.response(res, {
                 statusCode: 400,
                 message: 'send email fail',
@@ -306,18 +311,13 @@ export class AuthCtrl {
      * @param {*} next 
      * @returns 
      */
-
     public static async resetPassword(req: any, res: any, next: any) {
         try {
             // check if requiredFields
-            console.log(req.body)
             const userIdAuth = req.auth.userId;
-
 
             const requiredFields = ['password', 'newPassword', 'confirmPassword'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
-
-
 
             if (missingFields.length > 0) {
 
@@ -382,7 +382,7 @@ export class AuthCtrl {
                 });
             }
         } catch (error) {
-            console.log(error)
+            console.error('error in resetPassword ', error)
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to update user password',
@@ -400,7 +400,6 @@ export class AuthCtrl {
     * @param {*} next 
     * @returns 
     */
-
     public static async resetPasswordToken(req: any, res: any, next: any) {
         try {
             // check if requiredFields
@@ -464,7 +463,7 @@ export class AuthCtrl {
                 });
             }
         } catch (error) {
-            console.log(error)
+            console.error('error in resetPasswordToken ', error)
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to update user password',
@@ -480,7 +479,6 @@ export class AuthCtrl {
      * @param {*} next 
      * @returns 
      */
-
     public static async getResetPasswordToken(req: any, res: any, next: any) {
         try {
             // check if requiredFields
@@ -505,7 +503,7 @@ export class AuthCtrl {
             }
 
         } catch (error) {
-            console.log(error)
+            console.error('error in getResetPasswordToken ', error)
             return UtilsResponse.response(res, {
                 statusCode: 500,
                 message: 'Failed to check token',

@@ -5,7 +5,6 @@ import { game } from './routes/game';
 import { mode } from './routes/mode';
 import { keypass } from './routes/keypass';
 import { User } from './model/user';
-import { UtilsEmail } from './utils/utilsEmail';
 import bcrypt from 'bcrypt';
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -17,17 +16,15 @@ app.listen(port, function () {
 
 
 app.use(cors({
-  origin: true,
+  origin: process.env.URL_FRONT,
   credentials: true,
 }));
 
 
 app.use(cookieParser());
 
-// Middleware pour ajouter d'autres en-têtes CORS
 app.use(function (req, res, next) {
   res.header('Content-Type', 'application/json;charset=UTF-8');
-  // Vous n'avez pas besoin de définir 'Access-Control-Allow-Credentials' ici, car cors() le gère déjà
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
@@ -42,7 +39,10 @@ User.getUserByParams({ email: process.env.USER_ADMIN_EMAIL }).then(user => {
 
       console.log('admin user not already exist')
       console.log('Create admin user')
-      User.createUser({ name: process.env.USER_ADMIN_FIRSTNAME, firstName: process.env.USER_ADMIN_LASTNAME, email: process.env.USER_ADMIN_EMAIL, password: passwordHash, isAdmin: true }).then(user2 => {
+      User.createUser({ name: process.env.USER_ADMIN_FIRSTNAME,
+         firstName: process.env.USER_ADMIN_LASTNAME,
+          email: process.env.USER_ADMIN_EMAIL,
+           password: passwordHash, isAdmin: true }).then(user2 => {
         console.log(user2)
       })
     })

@@ -20,13 +20,13 @@ const uploadImageFilter = multer({
 
     fileFilter: function (req:any, file:any, callback:any) {
         console.log(file)
-        // Vérification du type de fichier
+        // check the type of file
         if (uploadImgConfig.image.mimetypes.includes(file.mimetype)) {
-            // Accepter le fichier
+            // accept the file
             callback(null, true);
         } else {
             console.log('error')
-            // Rejeter le fichier
+            // reject the file
             let error = new Error('Wrong format of file') as Error & { code?: string };
             error.code = 'MINETYPE_OF_FILE';
             callback(error, false);
@@ -34,6 +34,7 @@ const uploadImageFilter = multer({
 
     }
 }).single('file');
+
 
 export async function  uploadImage(req:any, res:any, next:any) {
     console.log('start uploadImage')
@@ -50,7 +51,7 @@ export async function  uploadImage(req:any, res:any, next:any) {
     });
 
     } catch (e) {
-        console.log('error in uploadImage : ', e)
+        console.error('error in uploadImage : ', e)
         return UtilsResponse.internalErrorResponse(res,'uploadImage')
     }
 }
