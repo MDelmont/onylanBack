@@ -4,14 +4,12 @@ export class UtilsResponse {
         return res.status(ret.statusCode).json({ message: ret.message, data: ret.data });
     }
 
-/*************  ✨ Codeium Command ⭐  *************/
     /**
      * Send a response with a 401 status code, indicating that a required field is missing
      * @param {object} res - The response object
      * @param {string[]} missingFields - The list of missing fields
      * @returns {Promise<object>} - The response object
      */
-/******  1f49fbba-f3bc-4a9c-8221-d7020a3d5f8e  *******/
     public static  async missingFieldResponse(res: any, missingFields: string[]) {
         return UtilsResponse.response(res, {
             statusCode: 401,
