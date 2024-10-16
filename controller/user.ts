@@ -451,7 +451,14 @@ export class UserCtrl {
             if(users) {
                 for (let user of users){
                     const filtredUser = await UtilsUser.filtredUser(user)
-                    filtredUsers.push({ pseudo: filtredUser.pseudo, budget: filtredUser.budget, file:filtredUser.file })
+                    if (req.auth.isAdmin){
+                        filtredUsers.push({ pseudo: filtredUser.pseudo, budget: filtredUser.budget, name: filtredUser.name, email: filtredUser.email ,firstName: filtredUser.firstName })
+                   
+                        
+                    } else {
+                        filtredUsers.push({ pseudo: filtredUser.pseudo, budget: filtredUser.budget, file:filtredUser.file })
+                    }
+                    
                 }
             }
  

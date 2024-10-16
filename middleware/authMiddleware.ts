@@ -158,3 +158,36 @@ export async function goodInviteToken(req: any, res: any, next: any) {
         return UtilsResponse.response(res, ret)
     }
 };
+
+
+export async function getRoleOfUserAuthMiddleware(req: any, res: any, next: any) {
+    // Get the token from the request headers
+    const token = req.cookies['token']
+
+    try {
+        // Verify the token with jwt
+        let userId:string;
+        const decoded = jwt.verify(token, secretKey);
+        // add user id to the req auth
+        if (typeof (decoded) === 'string') {
+            userId=decoded
+        }else {
+            userId= decoded.userId
+        }
+        const user = await User.getUserById(parseInt(userId))
+        req.auth.isAdmin = user?.isAdmin 
+
+        
+
+        next();
+        
+    } catch (error) {
+        console.error('Error in isAdminMiddleware',error)
+        const ret = {
+            statusCode: 401,
+            message: 'Token is not valid',
+            data: null
+        }
+        return UtilsResponse.response(res, ret)
+    }
+};
