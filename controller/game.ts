@@ -96,7 +96,6 @@ export class GameCtrl {
     
                 }
             }
-            console.log(gamesWithStats)
 
             if (!games || games.length === 0) {
                 return UtilsResponse.response(res, {

@@ -37,7 +37,7 @@ model InvitationToken {
     userId   Int     @unique
     token    String  @db.VarChar(255)
 
-    user User @relation("userInvitation", fields: [userId], references: [id])
+    user User @relation("userInvitation", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Game {

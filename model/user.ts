@@ -167,7 +167,7 @@ export class User {
      * @param {number} id - the id of the user
      * @returns {Promise<UserInterface | null>} - the deleted user object or null if not found
      */
-    public static async deteleUserById(id: number) {
+    public static async deleteUserById(id: number) {
         try {
             const res = await prisma.user.delete({
                 where: {
@@ -176,7 +176,7 @@ export class User {
             });
             return res;
         } catch (error) {
-            console.error('error in deteleUserById : ', error);
+            console.error('error in deleteUserById : ', error);
         } finally {
             await prisma.$disconnect(); // Disconnect from the Prisma client
         }

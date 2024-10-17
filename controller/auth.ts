@@ -62,6 +62,7 @@ export class AuthCtrl {
                 message: 'Success to login',
                 data: {
                     userId: user._id,
+                    isAdmin :user.isAdmin
                 },
             });
         } catch (error) {

@@ -101,20 +101,19 @@ export class UserCtrl {
             const user = await User.getUserById(userId)
             const player = await User.getUserById(parseInt(playerId))
 
-            if (!player || !user) {
+            if (!player || !user ) {
                 return UtilsResponse.response(res, {
                     statusCode: 401,
                     message: 'User not exist',
                     data: null,
                 });
             }
-
-            const userFiltredWithFile = await UtilsUser.filtredUser(user)
+            const userFiltredWithFile = await UtilsUser.filtredUser(player)
             let filtredUser;
             if (user?.isAdmin || user.id == player.id) {
                 filtredUser = userFiltredWithFile
             } else {
-                filtredUser = { pseudo: userFiltredWithFile.pseudo, budget: userFiltredWithFile.budget , file : userFiltredWithFile .file  }
+                filtredUser = { pseudo: userFiltredWithFile.pseudo, budget: userFiltredWithFile.budget , file : userFiltredWithFile.file  }
             }
             return UtilsResponse.response(res, {
                 statusCode: 200,
@@ -237,7 +236,7 @@ export class UserCtrl {
 
             }
             if (invitationToken?.userId) {
-                await User.deteleUserById(invitationToken?.userId)
+                await User.deleteUserById(invitationToken?.userId)
             }
             return UtilsResponse.response(res, {
                 statusCode: 200,
@@ -322,15 +321,17 @@ export class UserCtrl {
                     message: 'Failed to get inviations',
                     data: null,
                 });
+            } else {
+                return UtilsResponse.response(res, {
+                    statusCode: 200,
+                    message: 'Succes to getInvitations',
+                    data: {
+                        invitation: invitData,
+                    },
+                });
             }
 
-            return UtilsResponse.response(res, {
-                statusCode: 200,
-                message: 'Succes to getInvitations',
-                data: {
-                    invitation: invitData,
-                },
-            });
+            
         } catch (error) {
             // Send error response with UserID for debugging
             console.error('error in getInvitations', error);
@@ -353,7 +354,26 @@ export class UserCtrl {
         const path = req?.file?.path;
         try {
             const userId = req.auth.userId
+            const playerId = req.params.userId
 
+            const user = await User.getUserById(userId)
+            const player = await User.getUserById(parseInt(playerId))
+
+            if (!player || !user) {
+                return UtilsResponse.response(res, {
+                    statusCode: 401,
+                    message: 'Failed to update user',
+                    data: null,
+                });
+            }
+
+            if (player.id != user.id && !user.isAdmin) {
+                return UtilsResponse.response(res, {
+                    statusCode: 401,
+                    message: 'Failed to update user',
+                    data: null,
+                });
+            }
             const requiredFields = ['firstName', 'name', 'email', 'pseudo', 'budget'];
             const missingFields = await UtilsForm.checkMissingField(req, requiredFields)
             if (missingFields.length > 0) {
@@ -362,16 +382,10 @@ export class UserCtrl {
                 }
                 return UtilsResponse.missingFieldResponse(res, missingFields)
             }
-            const user = await User.getUserById(userId)
 
-            if (!user) {
-                return UtilsResponse.response(res, {
-                    statusCode: 401,
-                    message: 'Failed to update user',
-                    data: null,
-                });
-            }
-            let { budget, pseudo, email } = req.body
+
+            
+            let { budget, pseudo, email, firstName, name } = req.body
             email = email.toLowerCase()
             let allErrors: string[] = [];
 
@@ -381,14 +395,14 @@ export class UserCtrl {
                 allErrors.push('badEmailError')
             }
 
-            if (user.email != email) {
+            if (player.email != email) {
                 const existingUser = await User.getManyUserByParams({ email });
                 if (existingUser && existingUser.length > 0) {
                     console.log('User already exists with this email', email)
                     allErrors.push('errorEmailAlreadyExists')
                 }
             }
-            if (user.pseudo != pseudo) {
+            if (player.pseudo != pseudo) {
                 const existingUser2 = await User.getManyUserByParams({ pseudo });
                 if (existingUser2 && existingUser2.length > 0) {
                     console.log('User already exists with this pseudo', pseudo)
@@ -397,7 +411,6 @@ export class UserCtrl {
             }
 
             if (allErrors.length > 0) {
-                console.log(allErrors)
                 if (path) {
                     UtilsFunction.deleteFile(path)
                 }
@@ -407,11 +420,12 @@ export class UserCtrl {
                     data: { errors: allErrors },
                 });
             }
-            if (user.pictureUrl) {
-                UtilsFunction.deleteFile(user.pictureUrl)
+            if (player.pictureUrl) {
+                UtilsFunction.deleteFile(player.pictureUrl)
             }
-            const user2 = await User.updateUser(userId, { budget, pseudo, email, pictureUrl: path })
-            console.log(user2)
+            
+            const dataUpdate = user.isAdmin ?  { budget, pseudo, email, pictureUrl: path,firstName,name } : { budget, pseudo, email, pictureUrl: path}
+            const user2 = await User.updateUser(parseInt(playerId),dataUpdate)
             if (user2) {
                 return UtilsResponse.response(res, {
                     statusCode: 200,
@@ -452,11 +466,11 @@ export class UserCtrl {
                 for (let user of users){
                     const filtredUser = await UtilsUser.filtredUser(user)
                     if (req.auth.isAdmin){
-                        filtredUsers.push({ pseudo: filtredUser.pseudo, budget: filtredUser.budget, name: filtredUser.name, email: filtredUser.email ,firstName: filtredUser.firstName })
+                        filtredUsers.push({ id: filtredUser.id,pseudo: filtredUser.pseudo, budget: filtredUser.budget, name: filtredUser.name, email: filtredUser.email ,firstName: filtredUser.firstName })
                    
                         
                     } else {
-                        filtredUsers.push({ pseudo: filtredUser.pseudo, budget: filtredUser.budget, file:filtredUser.file })
+                        filtredUsers.push({ id: filtredUser.id, pseudo: filtredUser.pseudo, budget: filtredUser.budget, file:filtredUser.file })
                     }
                     
                 }
@@ -476,6 +490,54 @@ export class UserCtrl {
                 data: null,
             });
         }
+    }
+
+    public static async deleteUser(req: any, res: any, next: any) {
+        console.log('start deleteUser')
+        try {
+            const userIdAuth = req.auth.userId
+            const {userId} = req.params
+
+            const userAuth = await User.getUserById(parseInt(userIdAuth))
+            if (!userAuth?.isAdmin){
+                return UtilsResponse.response(res, {
+                    statusCode: 401,
+                    message: 'fail to deleteUser',
+                    data: null,
+                })
+            }
+
+            const deleteUser = await User.deleteUserById(parseInt(userId));
+            console.log(deleteUser)
+            
+            if (!deleteUser){
+                return UtilsResponse.response(res, {
+                    statusCode: 401,
+                    message: 'fail to deleteUser',
+                    data: null,
+                });
+
+            }
+            if (deleteUser?.pictureUrl){
+        
+                UtilsFunction.deleteFile(deleteUser.pictureUrl);
+        }
+            return UtilsResponse.response(res, {
+                statusCode: 200,
+                message: 'deleteUser successfully',
+                data: deleteUser,
+            })
+
+        } catch (error) {
+            // Handle any errors
+            console.error(' error in deleteUser', error);
+            return UtilsResponse.response(res, {
+                statusCode: 500,
+                message: 'fail to deleteUser',
+                data: null,
+            });
+        }
+
     }
 
 }
