@@ -8,7 +8,7 @@ export class UtilsForm {
      * @param {string[]} requiredFields - The list of required fields
      * @returns {Promise<string[]>} - A promise with a list of missing fields
      */
-    public static async checkMissingField(req: Request, requiredFields: string[]): Promise<string[]> {
+    public static async checkMissingField(req: any, requiredFields: string[]): Promise<string[]> {
         const missingFields = [];
         const body: any = req.body;
         if (!body || typeof body !== 'object') {
